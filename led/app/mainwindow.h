@@ -6,6 +6,9 @@
 #include <QSerialPortInfo>
 #include <QDebug>
 #include <QMessageBox>
+#include <QGridLayout>
+
+// #include "joystick.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,15 +23,18 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_red_pushButton_pressed();
-    void on_green_pushButton_released();
+    void redPushButton_pressed();
+    void greenPushButton_released();
 
-    void on_red_pushButton_released();
-
-    void on_green_pushButton_pressed();
+    void redPushButton_released();
+    void greenPushButton_pressed();
 
 private:
     Ui::MainWindow *ui;
+    /*Joystick *joystick;*/ // Declare an instance of your joystick class
+    // QPushButton *red_PushButton;
+    // QPushButton *green_PushButton;
+
     QSerialPort *arduino;
     bool arduino_is_available;
     QString arduino_port_name;

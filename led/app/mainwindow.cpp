@@ -1,11 +1,52 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "joystick.h"
+
+#include <QPushButton>
+#include <QVBoxLayout> // Include the necessary header for QVBoxLayout
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QVBoxLayout *layout = qobject_cast<QVBoxLayout*>(ui->centralwidget->layout());
+
+    // Check if layout is null and create a new QVBoxLayout if needed
+    if (!layout) {
+        layout = new QVBoxLayout(ui->centralwidget);
+        ui->centralwidget->setLayout(layout);
+    }
+
+    QString redButtonText = tr("RED").arg(layout->count());
+    QPushButton *redPushButton = new QPushButton(redButtonText);
+    layout->addWidget(redPushButton);
+
+    QString greenButtonText = tr("GREEN").arg(layout->count());
+    QPushButton *greenPushButton = new QPushButton(greenButtonText);
+    layout->addWidget(greenPushButton);
+
+    Joystick *joystick = new Joystick(this);
+    layout->addWidget(joystick);
+
+    QObject::connect(
+        redPushButton, &QPushButton::pressed,
+        this, &MainWindow::redPushButton_pressed
+        );
+    QObject::connect(
+        redPushButton, &QPushButton::released,
+        this, &MainWindow::redPushButton_released
+        );
+
+    QObject::connect(
+        greenPushButton, &QPushButton::pressed,
+        this, &MainWindow::greenPushButton_pressed
+        );
+    QObject::connect(
+        greenPushButton, &QPushButton::released,
+        this, &MainWindow::greenPushButton_released
+        );
 
     // set up serial port
     arduino = new QSerialPort;
@@ -60,7 +101,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_red_pushButton_pressed()
+void MainWindow::redPushButton_pressed()
 {
     // Send command '1' to Arduino when the button is pressed
     if (arduino->isWritable()) {
@@ -72,7 +113,7 @@ void MainWindow::on_red_pushButton_pressed()
     }
 }
 
-void MainWindow::on_red_pushButton_released()
+void MainWindow::redPushButton_released()
 {
     // Send command '0' to Arduino when the button is released
     if (arduino->isWritable()) {
@@ -84,7 +125,7 @@ void MainWindow::on_red_pushButton_released()
     }
 }
 
-void MainWindow::on_green_pushButton_pressed()
+void MainWindow::greenPushButton_pressed()
 {
     // Send command '1' to Arduino when the button is pressed
     if (arduino->isWritable()) {
@@ -96,10 +137,9 @@ void MainWindow::on_green_pushButton_pressed()
     }
 }
 
-
-void MainWindow::on_green_pushButton_released()
+void MainWindow::greenPushButton_released()
 {
-    // Send command '0' to Arduino when the button is released
+    // Send command '1' to Arduino when the button is pressed
     if (arduino->isWritable()) {
         QString command = "2";
         qDebug() << "Sending command: " << command;
@@ -108,4 +148,3 @@ void MainWindow::on_green_pushButton_released()
         qDebug() << "Could not write to serial";
     }
 }
-
